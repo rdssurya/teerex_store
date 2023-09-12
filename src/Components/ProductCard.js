@@ -7,6 +7,7 @@ import {
     Typography,
     Stack
 } from "@mui/material";
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import '../Styles/ProductCard.css';
 
 
@@ -54,6 +55,8 @@ export default function ProductCard(props) {
      */
     const addingProductToCart=()=>{
         const itemsInCart = [...JSON.parse(localStorage.getItem('CartItems'))];
+        
+        // Checking for whether item in cart or not
         const isItemInCart = checkItemInCart(props.name,itemsInCart);
 
         if(isItemInCart===true){
@@ -69,7 +72,7 @@ export default function ProductCard(props) {
                 qty:1
             };
             localStorage.setItem('CartItems',JSON.stringify([...itemsInCart,obj]));
-            alert('Product added to cart. Click on Cart Button to view cart');
+            alert('Product added to cart. Feel free to add more products. Or click on Cart Button to view cart');
         }
     };
 
@@ -88,7 +91,7 @@ export default function ProductCard(props) {
             </Stack>
             <CardActions>
                 <Button onClick={addingProductToCart} variant='contained' fullWidth>
-                    ADD TO CART
+                    <AddShoppingCartIcon/> ADD TO CART 
                 </Button>
             </CardActions>
         </Card>

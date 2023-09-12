@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import axios from "axios";
 import Header from "./Header";
 import ProductCard from "./ProductCard";
@@ -39,7 +39,7 @@ export default function Products(){
 
     /**
      * Definition of makingAPICallToFetchProducts()
-     * This is the function that is called on intial page load
+     * Function that is called inside useEffect Hook on intial page load
      * 
      *  @returns { Array.<Product> }
      *  Array of objects with complete data on all available products
@@ -63,20 +63,24 @@ export default function Products(){
     return (
         <>
         <Header/>
-        <Typography>Products</Typography>
         <Grid container>
-            <Grid container spacing={3}>
-                {products.map((product)=>(
-                    <Grid item key={product.id} xs={12} sm={4} md={3}>
-                        <ProductCard 
-                            name={product.name} 
-                            cost={product.price} 
-                            image={product.imageURL}
-                            currency={product.currency}
-                            id={product.id}
-                        />
-                    </Grid>
-                ))}
+            <Grid item xs={3}>
+
+            </Grid>
+            <Grid item xs={9}>
+                <Grid container spacing={3}>
+                    {products.map((product)=>(
+                        <Grid item key={product.id} xs={12} sm={4} md={3}>
+                            <ProductCard 
+                                name={product.name} 
+                                cost={product.price} 
+                                image={product.imageURL}
+                                currency={product.currency}
+                                id={product.id}
+                            />
+                        </Grid>
+                    ))}
+                </Grid>
             </Grid>
         </Grid>
         </>
