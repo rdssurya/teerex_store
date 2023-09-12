@@ -69,6 +69,7 @@ export default function ProductCard(props) {
                 qty:1
             };
             localStorage.setItem('CartItems',JSON.stringify([...itemsInCart,obj]));
+            alert('Product added to cart. Click on Cart Button to view cart');
         }
     };
 

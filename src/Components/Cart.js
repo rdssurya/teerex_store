@@ -1,5 +1,6 @@
 import React, { useState , useEffect } from "react";
 import { Typography, Stack } from "@mui/material";
+import {Link} from "react-router-dom";
 import Header from "./Header";
 import CartItem from "./CartItem";
 
@@ -20,7 +21,7 @@ export default function Cart(){
         setValue(totalSum);
     }
 
-    const dummy=()=>{
+    const updatingTheQuantityOfCartItems=()=>{
         setCartItems([...JSON.parse(localStorage.getItem('CartItems'))]);
     }
     
@@ -39,13 +40,13 @@ export default function Cart(){
                         qty={cartItem.qty}
                         currency={cartItem.currency}
                         id={cartItem.id}
-                        handleChange={dummy}
+                        handleChange={updatingTheQuantityOfCartItems}
                     />
                 ))}
             </Stack>
             <Stack marginX={'1rem'}>
                 <Typography>Total Cost: {value} INR</Typography>
-                <button>CHECKOUT</button>
+                <Link to="/thanks"><button onClick={()=>{localStorage.clear();}}>CHECKOUT</button></Link>
             </Stack>
         </Stack>
         </>
