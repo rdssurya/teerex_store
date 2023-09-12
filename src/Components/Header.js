@@ -7,17 +7,6 @@ import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import "../Styles/Header.css";
 
 
-
-/**
- * Header-->
- * 
- * Description: Returns Header Component (JSX)
- * 
- * Implementation:
- * Used MUI Icons
- * Used Stack MUI component to wrap the buttons
- * Used Box MUI component to wrap the stacks.
-*/
 const Header = () => {
     return (
         <>
