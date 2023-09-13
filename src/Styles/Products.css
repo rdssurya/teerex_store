@@ -5,17 +5,22 @@
     margin: 1rem;
 }
 
+.clear-btn{
+    margin-left: 1rem;
+}
+
 .display-filters-md{
     padding-left: 1rem;
     padding-right: 1rem;
     display: block;
 }
+
 .display-filters-sm{
     padding: 1rem;
     display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .display-filters-sm {
       display: block;
     }
