@@ -35,6 +35,12 @@ export default function Products(){
         if(localStorage.getItem('CartItems')===null){
             localStorage.setItem('CartItems',JSON.stringify([]));
         }
+        if(localStorage.getItem('AppliedFilters')===null){
+            localStorage.setItem('AppliedFilters',JSON.stringify([]));
+        }
+        if(localStorage.getItem('CurrentListedProducts')===null){
+            localStorage.setItem('CurrentListedProducts',JSON.stringify([]));
+        }
         makingAPICallToFetchProducts();
     },[]);
 
@@ -74,19 +80,22 @@ export default function Products(){
      * Updates the products array
      */
     const captureTheInputValue = (text) => {
-        const allAvailableProducts = [...JSON.parse(localStorage.getItem('AllProducts'))]
         if(text===''){
-            setProducts([...allAvailableProducts]);
+            setProducts((previouslyAvailableProducts)=>[...previouslyAvailableProducts]);
         }
         else{
             const givenInputWord = text.trim();
-            const filteredProducts = allAvailableProducts.filter((product) => {
+            const searchResults = products.filter((product) => {
                 return product.name.toLowerCase().includes(givenInputWord.toLowerCase());
             });
-            setProducts([...filteredProducts]);
+            setProducts([...searchResults]);
+            localStorage.setItem('CurrentListedProducts',JSON.stringify([...searchResults]));
         }    
     }
 
+    const productsListUpdater = (arr) => {
+        setProducts([...arr]);
+    }
    
     return (
         <>
@@ -95,6 +104,7 @@ export default function Products(){
             <div>
                 <input 
                     type="text" 
+                    name="searchBar"
                     onChange={(e)=> captureTheInputValue(e.target.value) } 
                     placeholder="Search (Ex: Polo)"
                 />
@@ -102,11 +112,11 @@ export default function Products(){
         </div>
         <div className="display-filters-sm">
             <button onClick={()=>{setIsClosed(!isClosed);}}>Filters</button>
-            {isClosed?<></>:<Filters listedProducts={products}/>}
+            {isClosed?<></>:<Filters listedProducts={products} handler={productsListUpdater}/>}
         </div>
         <Grid container>
             <Grid item className="display-filters-md" md={2}>
-                <Filters listedProducts={products}/>
+                <Filters listedProducts={products} handler={productsListUpdater}/>
             </Grid>
             {products.length === 0 ? 
             <h2>Sorry! No Products found. Try searching for any other product... </h2>:
