@@ -1,0 +1,6 @@
+@media (max-width: 768px) {
+    .filters-div {
+      display: flex;
+      justify-content: space-around;
+    }
+}

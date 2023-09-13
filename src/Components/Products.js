@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Typography, Hidden } from "@mui/material";
+import { Grid } from "@mui/material";
 import axios from "axios";
 import Header from "./Header";
 import ProductCard from "./ProductCard";
+import Filters from "./Filters";
 import '../Styles/Products.css';
-import { ArrowDropDown } from "@mui/icons-material";
+
 
 // Definition of Data Structures used
 /**
@@ -24,7 +25,7 @@ import { ArrowDropDown } from "@mui/icons-material";
 
 export default function Products(){
     const [products,setProducts]=useState([]);
-    
+    const [isClosed,setIsClosed]=useState(true);
     
     /**
      * useEffect Hook to make a function call on page load
@@ -86,7 +87,7 @@ export default function Products(){
         }    
     }
 
-
+   
     return (
         <>
         <Header/>
@@ -99,18 +100,17 @@ export default function Products(){
                 />
             </div>
         </div>
+        <div className="display-filters-sm">
+            <button onClick={()=>{setIsClosed(!isClosed);}}>Filters</button>
+            {isClosed?<></>:<Filters listedProducts={products}/>}
+        </div>
         <Grid container>
-            <Grid item md={3}>
-                <Hidden smDown>
-                    <Typography>Hello</Typography>
-                </Hidden>
-                <Hidden>
-                    <ArrowDropDown>Open</ArrowDropDown>
-                </Hidden>
+            <Grid item className="display-filters-md" md={2}>
+                <Filters listedProducts={products}/>
             </Grid>
             {products.length === 0 ? 
             <h2>Sorry! No Products found. Try searching for any other product... </h2>:
-            <Grid item md={9}>
+            <Grid item md={10}>
                 <Grid container spacing={3}>
                     {products.map((product)=>(
                         <Grid item key={product.id} xs={12} sm={4} md={3}>
