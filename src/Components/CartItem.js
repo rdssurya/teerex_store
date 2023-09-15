@@ -22,59 +22,65 @@ import '../Styles/CartItem.css';
 
 export default function CartItem(props){
 
-    // Retrieving available data on all products in stock from Local Storage
+    // Retrieving available data on all products from Local Storage
     const availableProducts=[...JSON.parse(localStorage.getItem('AllProducts'))];
     
-    // Retrieving the details of cart items added to cart from Local Storage
+    // Retrieving the details of cart items added to cart by user from Local Storage
     const availableCartItems = [...JSON.parse(localStorage.getItem('CartItems'))];
 
 
     /**
      * Function which is called to increment the quantity of an item inside cart
-     * @param {number} id 
-     * @param {number} quantity 
+     * @param {number} idOfSelectedProduct
+     * @param {number} currentQuantity 
      * If user tries to increase the quantity of a particular item greater than the quantity in stock
      *      An alert message is shown
-     * Otherwise quantity will be incremented and we update the array of CartItems in Local Storage
-     * @returns {Array.<cartItem>} updated in local storage
-     * ATLAST WE CALL handleChange() function so as to tell the /cart page that CartItems array has been updated in Local Storage  
+     * Otherwise quantity will be incremented 
+     * We update the array of CartItems in Local Storage
+     * ATLAST WE CALL handleChange() function so as to tell the /cart page that CartItems array has been updated in Local Storage
+     * This is where we use handleChange prop which calls updatingTheQuantityOfCartItems() function of Cart to tell the Cart that there is a change in CartItems
      */
-    const incrementQuantityByOne=( id, quantity)=>{
-        const product = availableProducts.find(product => product.id === id);
-        if(quantity===product.quantity){
-            alert(`Available stock for this product is ${props.qty}.`)
+    const incrementQuantityByOne = ( idOfSelectedProduct, currentQuantity) => {
+        const selectedProduct = availableProducts.find(product => product.id === idOfSelectedProduct);
+        const availableQuantityOFTheProduct = selectedProduct.quantity;
+
+        if(currentQuantity === availableQuantityOFTheProduct){
+            alert(`Available stock for this product is ${availableQuantityOFTheProduct}. Cannot add more products`);
         }
         else{
-            const requiredIndexOfCartItem = availableCartItems.findIndex(item => item.id === id);
-            availableCartItems[requiredIndexOfCartItem]={...availableCartItems[requiredIndexOfCartItem],
-                qty:quantity+1
-            }
+            const indexOfRequiredCartItem = availableCartItems.findIndex(item => item.id === idOfSelectedProduct);
+            availableCartItems[indexOfRequiredCartItem] = {...availableCartItems[indexOfRequiredCartItem],
+                qty : currentQuantity + 1
+            };
             localStorage.setItem('CartItems', JSON.stringify(availableCartItems));
         }
+
         props.handleChange();
     };
 
 
     /**
      * Function which is called to decrement the quantity of an item inside cart
-     * @param {number} id 
-     * @param {number} quantity 
+     * @param {number} idOfSelectedProduct
+     * @param {number} currentQuantity 
      * If user decrements the quantity of an item to zero
-     *      That item will be deleted from the cart
+     *      That item will be removed from the cart
      * In other cases quantity will be decremented and we update the array of CartItems in Local Storage
-     * @returns {Array.<cartItem>} updated in local storage
      * ATLAST WE CALL handleChange() function so as to tell the /cart page that CartItems array has been updated in Local Storage
+     * This is where we use handleChange prop which calls updatingTheQuantityOfCartItems() function of Cart to tell the Cart that there is a change in CartItems
      */
-    const decrementQuantityByOne=( id, quantity)=>{
-        const requiredIndexOfCartItem = availableCartItems.findIndex(item => item.id === id);
-        if(quantity===1){
-            availableCartItems.splice(requiredIndexOfCartItem, 1);
+    const decrementQuantityByOne=( idOfSelectedProduct, currentQuantity)=>{
+        const indexOfRequiredCartItem = availableCartItems.findIndex(item => item.id === idOfSelectedProduct);
+
+        if(currentQuantity === 1){
+            availableCartItems.splice(indexOfRequiredCartItem, 1);
         }
         else{
-            availableCartItems[requiredIndexOfCartItem]={...availableCartItems[requiredIndexOfCartItem],
-                qty:quantity-1
-            }
+            availableCartItems[indexOfRequiredCartItem] = {...availableCartItems[indexOfRequiredCartItem],
+                qty : currentQuantity - 1
+            };
         }
+
         localStorage.setItem('CartItems', JSON.stringify(availableCartItems));
         props.handleChange();
     };
@@ -82,43 +88,48 @@ export default function CartItem(props){
 
     /**
      * Function which is called on clicking the delete button
-     * @param {number} id 
+     * @param {number} idOfSelectedProduct 
      * Deletes that particular cart item from the cart 
      * Updates the CartItems array in local storage as well
-     * @returns {Array.<cartItem>} updated in local storage
-     * ATLAST WE CALL handleChange() function so as to tell the /cart page that CartItems array has been updated in Local Storage 
+     * ATLAST WE CALL handleChange() function so as to tell the /cart page that CartItems array has been updated in Local Storage
+     * This is where we use handleChange prop which calls updatingTheQuantityOfCartItems() function of Cart to tell the Cart that there is a change in CartItems
      */
-    const handleDelete=(id)=>{
-        const requiredIndexOfCartItem = availableCartItems.findIndex(item => item.id === id);
-        availableCartItems.splice(requiredIndexOfCartItem, 1);
+    const handleDelete = (idOfSelectedProduct)=>{
+        const indexOfRequiredCartItem = availableCartItems.findIndex(item => item.id === idOfSelectedProduct);
+        availableCartItems.splice(indexOfRequiredCartItem, 1);
         localStorage.setItem('CartItems', JSON.stringify(availableCartItems));
         props.handleChange();
     }
     
-
+    // CartItem component returns a card component with details of each cart item
     return (
         <Box marginY={'1rem'}>
-            <Card>
+            <Card style={{ width: 340, height: 200 }}>
+
                 <Stack direction={'row'}>
                     <CardMedia
                         component="img"
                         alt={props.name}
                         className='cartCard-image'
                         image={props.image}
+                        style={{ objectFit: 'contain', width: '200px' }}
                     />
                     <Stack paddingX={'1rem'}>
-                        <Typography fontWeight={700}>{props.name}</Typography>
-                        <Typography fontWeight={700}>Cost: {props.currency} {props.cost}</Typography>
+                        <Typography fontWeight={700} fontSize={'15px'}>{props.name}</Typography>
+                        <Typography fontWeight={700} fontSize={'15px'}>Cost: INR {props.cost}</Typography>
                     </Stack>
                 </Stack>
+
                 <Stack direction={'row'} margin={'1rem'}>
                     <button onClick={() => {decrementQuantityByOne(props.id, props.qty)} }>-</button>    
                     <Typography paddingX={'1rem'}>Qty: {props.qty}</Typography>
                     <button onClick={() => {incrementQuantityByOne(props.id, props.qty)} }>+</button>
                 </Stack>
+
                 <Stack margin={'5px'}>
                     <button onClick={() => {handleDelete(props.id)} }>Delete</button>
                 </Stack>
+
             </Card>
         </Box>
     );

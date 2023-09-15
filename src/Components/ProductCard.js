@@ -38,7 +38,7 @@ export default function ProductCard(props) {
      * Returns true if item is already present in cart
      * Returns false if item is present in cart
      */
-    const checkItemInCart = (productName,itemsInCart) => { 
+    const checkItemIsInCart = (productName,itemsInCart) => { 
         const product = itemsInCart.find(cartItem => cartItem.name === productName);
         return !!product;
     };
@@ -53,13 +53,13 @@ export default function ProductCard(props) {
      * If product is already in cart an alert message is shown
      * If product is not in cart details of that particular product are added to CartItems
      */
-    const addingProductToCart=()=>{
-        const itemsInCart = [...JSON.parse(localStorage.getItem('CartItems'))];
+    const addingProductToCart = () => {
+        const itemsCurrentlyInCart = [...JSON.parse(localStorage.getItem('CartItems'))];
         
         // Checking for whether item in cart or not
-        const isItemInCart = checkItemInCart(props.name,itemsInCart);
+        const isItemInCart = checkItemIsInCart( props.name, itemsCurrentlyInCart);
 
-        if(isItemInCart===true){
+        if(isItemInCart === true){
             alert('Item is already in cart. Click on Cart to navigate to cart page');
         }
         else{
@@ -71,29 +71,35 @@ export default function ProductCard(props) {
                 id:props.id,
                 qty:1
             };
-            localStorage.setItem('CartItems',JSON.stringify([...itemsInCart,obj]));
-            alert('Product added to cart. Feel free to add more products. Or click on Cart Button to view cart');
+            const updatedCartItems = JSON.stringify( [...itemsCurrentlyInCart, obj] );
+            localStorage.setItem('CartItems', updatedCartItems);
+            alert('Product added to cart. Feel free to add more products. Or click on Cart to view cart');
         }
     };
 
 
     return (
+
         <Card>
+
             <CardMedia
                 component="img"
                 alt={props.name}
                 className='productCard-image'
                 image={props.image}
             />
+
             <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} paddingX={'1rem'}>
                 <Typography fontWeight={700} fontSize={'20px'}>{props.name}</Typography>
                 <Typography fontWeight={700}>{props.currency} {props.cost}</Typography>
             </Stack>
+
             <CardActions>
                 <Button onClick={addingProductToCart} variant='contained' fullWidth>
                     <AddShoppingCartIcon/> ADD TO CART 
                 </Button>
             </CardActions>
+            
         </Card>
     );
 }
