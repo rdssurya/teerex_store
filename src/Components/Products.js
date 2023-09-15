@@ -23,7 +23,6 @@ import "../Styles/Products.css";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
-  const [searchedWord, setSearchedWord] = useState("");
   const [filtersButtonIsClosed, setFiltersButtonIsClosed] = useState(true);
   const [pageIsLoaded, setPageIsLoaded] = useState(false);
 
@@ -93,7 +92,6 @@ export default function Products() {
         JSON.stringify([...searchResults])
       );
     }
-    setSearchedWord("");
   };
 
   /**
@@ -120,13 +118,9 @@ export default function Products() {
           <input
             type="text"
             name="searchBar"
-            onChange={(e) => setSearchedWord(e.target.value)}
-            value={searchedWord}
+            onChange={(e) => searchTheInputValue(e.target.value)}
             placeholder="Search (Ex: Polo)"
           />
-          <button onClick={() => searchTheInputValue(searchedWord)}>
-            Search
-          </button>
         </div>
         <div className="clear-btn">
           <button

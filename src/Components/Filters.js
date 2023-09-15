@@ -37,8 +37,7 @@ export default function Filters(props){
             const uniqueGenders = ['Gender', getUniqueFilterValues(arrayOfAvailableProducts,"gender")];
             const uniqueTypes = ['Type', getUniqueFilterValues(arrayOfAvailableProducts,"type")];
             const uniqueColors = ['Color', getUniqueFilterValues(arrayOfAvailableProducts,"color")];
-            const priceRanges = ['Price',['0-250','250-450','450-500']];
-            setListOfFilters([uniqueGenders,uniqueTypes,uniqueColors,priceRanges]);
+            setListOfFilters([uniqueGenders,uniqueTypes,uniqueColors]);
         }
 
         //calling the above function
