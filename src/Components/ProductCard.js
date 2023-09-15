@@ -28,7 +28,7 @@ export default function ProductCard(props) {
     /**
      * Check whether the product is already in cart items
      * 
-     * @param {string} productName 
+     * @param {string} nameOfProductWhichUserWantsToAdd 
      *      Name of the product which the user wants to add to cart
      * @param {Array.<cartItem>} itemsInCart 
      *      Array of objects containing details of items in cart  
@@ -38,8 +38,8 @@ export default function ProductCard(props) {
      * Returns true if item is already present in cart
      * Returns false if item is present in cart
      */
-    const checkItemIsInCart = (productName,itemsInCart) => { 
-        const product = itemsInCart.find(cartItem => cartItem.name === productName);
+    const checkItemIsInCart = ( nameOfProductWhichUserWantsToAdd, itemsInCart) => { 
+        const product = itemsInCart.find(cartItem => cartItem.name === nameOfProductWhichUserWantsToAdd);
         return !!product;
     };
     
@@ -47,7 +47,7 @@ export default function ProductCard(props) {
     /**
      * Function which is called upon clicking add to cart button on product card
      * 
-     * checkItemInCart function is called here, which takes productName and
+     * checkItemInCart function is called here, which takes nameOfProductWhichUserWantsToAdd and
      * details of the CartItems from localStorage as arguments
      * 
      * If product is already in cart an alert message is shown
@@ -77,7 +77,7 @@ export default function ProductCard(props) {
         }
     };
 
-
+    // Returning Product Card with image of the product, name and price details of the products and add to cart button
     return (
 
         <Card>

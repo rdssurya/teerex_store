@@ -20,14 +20,14 @@ import "../Styles/Cart.css";
 
 export default function Cart(){
     const [cartItems, setCartItems] = useState([...JSON.parse(localStorage.getItem('CartItems'))] || []);
+    const [ totalItemsCost, setTotalItemsCost] = useState(0);
+    const [ address, setAddress] = useState('');
+    const navigate = useNavigate();
     const keysOfLocalStorage = Object.keys(localStorage);
-    const [totalItemsCost,setTotalItemsCost] = useState(0);
-    const [address,setAddress] = useState('');
-    const navigate=useNavigate();
 
 
-    // Whenever there is a change in the item quantity inside our cart it is reflected in cartItems
-    // and we update the value of Total Cost in /cart
+    // Whenever there is a change in the item quantity inside our cart it is reflected in CartItems present in local storage
+    // As there is a change in cartItems total cart value will get updated with new cart value
     useEffect(() => {
         totalCartValue(cartItems);
     }, [cartItems]);
@@ -40,7 +40,7 @@ export default function Cart(){
      * Loops over the cartItems array and returns us the total cost of items present inside our cart
      *  Total Items Cost is updated accordingly
      */
-    const totalCartValue=(cartItems)=>{
+    const totalCartValue = (cartItems) => {
         const newTotalSum = cartItems.reduce((accumulator, currentValue) => {
             const product = currentValue.qty * currentValue.cost;
             return accumulator + product;
@@ -53,7 +53,7 @@ export default function Cart(){
      * Function which is called upon updating/deleting the quantity of items in CartItem.js (handleChange())
      * Whenever the quantity is updated or deleted in a cartItem, CartItems array in local storage is updated
      * So to reflect that change in /cart this function is called...
-     * Connector function between Cart and CartItem components to handle changes. 
+     * Connector function between Cart.js and CartItem.js to handle changes. 
      */
     const updatingTheQuantityOfCartItems = () => {
         const updatedCartItems = [...JSON.parse(localStorage.getItem('CartItems'))];
@@ -61,6 +61,29 @@ export default function Cart(){
     }
     
 
+    /**
+     * Function which is called upon clicking the checkout button
+     * First checks whether cart is empty or not if empty shows alert message and navigates the user to products page
+     * If cart has items and address is not filled then alert message is shown
+     * If address field is less than 20 characters then alert message is shown
+     * If everything is fine then user will be navigated to thanks page and keys in local storage will be set to empty arrays
+     */
+    const handleCheckout = () => {
+        if(cartItems.length===0){
+            alert('Add atleast one product to Checkout!');
+            navigate('/');
+        }
+        else if(address===''){
+            alert('Enter valid address');
+        }
+        else if(address.length<20){
+            alert('Address should be atleast 20 characters');
+        }
+        else{
+            navigate('/thanks');
+            setEmptyArraysInLocalStorage(keysOfLocalStorage);
+        }
+    }
 
     /**
      * Function which can be used to initialize an array of keys to empty arrays in local storage
@@ -112,22 +135,7 @@ export default function Cart(){
                         value={address} 
                         onChange={(e)=>setAddress(e.target.value)}
                     />
-                    <button onClick={() =>{
-                            if(cartItems.length===0){
-                                alert('Add atleast one product to Checkout!');
-                                navigate('/products');
-                            }
-                            else if(address===''){
-                                alert('Enter valid address');
-                            }
-                            else if(address.length<20){
-                                alert('Address should be atleast 20 characters');
-                            }
-                            else{
-                                navigate('/thanks');
-                                setEmptyArraysInLocalStorage(keysOfLocalStorage);
-                            }
-                        }}>
+                    <button onClick={handleCheckout}>
                         CHECKOUT
                     </button>
                 </Stack>

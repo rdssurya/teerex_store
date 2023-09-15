@@ -36,8 +36,7 @@ export default function Products() {
     if (localStorage.getItem("CartItems") === null) {
       localStorage.setItem("CartItems", JSON.stringify([]));
       localStorage.setItem("AllProducts", JSON.stringify([]));
-      localStorage.setItem("AppliedFilters", JSON.stringify([]));
-      localStorage.setItem("FilteredProductsByUser", JSON.stringify([]));
+      localStorage.setItem("searchedOrFilteredProductsByUser", JSON.stringify([]));
     }
     makingAPICallToFetchProducts();
     setPageIsLoaded(true);
@@ -74,7 +73,7 @@ export default function Products() {
    * If text is an empty string AllProducts from the local storage will be shown
    * In other cases products whose name includes the given text will be filtered and will be shown
    * @returns {Array.<Product>}
-   *       Updates the products array and updates FilteredProductsByUser in local storage
+   *       Updates the products array and updates searchedOrFilteredProductsByUser in local storage
    */
   const searchTheInputValue = (text) => {
     if (text === "") {
@@ -88,7 +87,7 @@ export default function Products() {
       });
       setProducts([...searchResults]);
       localStorage.setItem(
-        "FilteredProductsByUser",
+        "searchedOrFilteredProductsByUser",
         JSON.stringify([...searchResults])
       );
     }

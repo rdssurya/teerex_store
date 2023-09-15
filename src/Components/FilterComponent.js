@@ -19,7 +19,7 @@ import { Typography } from "@mui/material";
 
 export default function FilterComponent(props){
     const allProducts = [...JSON.parse(localStorage.getItem('AllProducts'))];
-    const alreadyFilteredProducts = [...JSON.parse(localStorage.getItem('FilteredProductsByUser'))]
+    const searchedOrFilteredProducts = [...JSON.parse(localStorage.getItem('searchedOrFilteredProductsByUser'))];
     const [filters, setFilters] = useState({
         gender: [],
         color: [],
@@ -31,7 +31,7 @@ export default function FilterComponent(props){
     }, [filters]);
 
     function filterProducts () {
-        const productsList = alreadyFilteredProducts.length === 0 ? [...allProducts] : [...alreadyFilteredProducts]
+        const productsList = searchedOrFilteredProducts.length === 0 ? [...allProducts] : [...searchedOrFilteredProducts]
         const filteredProducts = productsList.filter((product) => {
             const genderFilter = filters.gender.length === 0 || filters.gender.includes(product.gender);
             const colorFilter = filters.color.length === 0 || filters.color.includes(product.color);
