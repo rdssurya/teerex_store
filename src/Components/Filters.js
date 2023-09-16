@@ -23,7 +23,7 @@ export default function Filters(props){
      * Use Effect Hook ensures that we have our list of filters with us once the component mounts
      */
     useEffect( () => {
-        const availableProducts = [...JSON.parse(localStorage.getItem('AllProducts'))];
+        const availableProducts = [...JSON.parse(localStorage.getItem('allProducts'))];
 
         /**
          * Defintion of Unique filters array

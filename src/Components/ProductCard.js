@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Button,
     Card,
@@ -24,7 +24,7 @@ import '../Styles/ProductCard.css';
  */
 
 export default function ProductCard(props) {
-
+    const [showMessage,setShowMessage] = useState('');
     /**
      * Check whether the product is already in cart items
      * 
@@ -42,7 +42,17 @@ export default function ProductCard(props) {
         const product = itemsInCart.find(cartItem => cartItem.name === nameOfProductWhichUserWantsToAdd);
         return !!product;
     };
-    
+
+    /**
+     * Function which is called upon clicking add to cart button on products card
+     * @param {string} message 
+     * Message will be shown in product card according to the requirement.
+     */
+    const showAndHideMessage = (message) => {
+        const timer = 3000;
+        setShowMessage(message);
+        setTimeout(()=>{setShowMessage('')}, timer);
+    }
 
     /**
      * Function which is called upon clicking add to cart button on product card
@@ -50,17 +60,17 @@ export default function ProductCard(props) {
      * checkItemInCart function is called here, which takes nameOfProductWhichUserWantsToAdd and
      * details of the CartItems from localStorage as arguments
      * 
-     * If product is already in cart an alert message is shown
+     * If product is already in cart an alert message is shown to inform item is in cart
      * If product is not in cart details of that particular product are added to CartItems
      */
     const addingProductToCart = () => {
-        const itemsCurrentlyInCart = [...JSON.parse(localStorage.getItem('CartItems'))];
+        const itemsCurrentlyInCart = [...JSON.parse(localStorage.getItem('cartItems'))];
         
         // Checking for whether item in cart or not
         const isItemInCart = checkItemIsInCart( props.name, itemsCurrentlyInCart);
 
         if(isItemInCart === true){
-            alert('Item is already in cart. Click on Cart to navigate to cart page');
+            showAndHideMessage('Item is already in cart. Click on cart to view cart');
         }
         else{
             const obj={
@@ -72,8 +82,8 @@ export default function ProductCard(props) {
                 qty:1
             };
             const updatedCartItems = JSON.stringify( [...itemsCurrentlyInCart, obj] );
-            localStorage.setItem('CartItems', updatedCartItems);
-            alert('Product added to cart. Feel free to add more products. Or click on Cart to view cart');
+            localStorage.setItem('cartItems', updatedCartItems);
+            showAndHideMessage('Product added to cart. Click on Cart to view cart');
         }
     };
 
@@ -95,6 +105,7 @@ export default function ProductCard(props) {
                 <Typography fontWeight={700}>{props.currency} {props.cost}</Typography>
             </Stack>
 
+            {showMessage && <div className="message"><span>{showMessage}</span></div>}
             <CardActions>
                 <Button onClick={addingProductToCart} variant='contained' fullWidth>
                     <AddShoppingCartIcon/> ADD TO CART 

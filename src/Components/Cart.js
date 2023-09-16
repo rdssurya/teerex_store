@@ -19,14 +19,15 @@ import "../Styles/Cart.css";
  */
 
 export default function Cart(){
-    const [cartItems, setCartItems] = useState([...JSON.parse(localStorage.getItem('CartItems'))] || []);
+    const [cartItems, setCartItems] = useState([...JSON.parse(localStorage.getItem('cartItems'))] || []);
     const [ totalItemsCost, setTotalItemsCost] = useState(0);
     const [ address, setAddress] = useState('');
     const navigate = useNavigate();
     const keysOfLocalStorage = Object.keys(localStorage);
+    const [showErrorMessage, setShowErrorMessage] = useState('');
 
 
-    // Whenever there is a change in the item quantity inside our cart it is reflected in CartItems present in local storage
+    // Whenever there is a change in the item quantity inside our cart it is reflected in cartItems present in local storage
     // As there is a change in cartItems total cart value will get updated with new cart value
     useEffect(() => {
         totalCartValue(cartItems);
@@ -56,28 +57,37 @@ export default function Cart(){
      * Connector function between Cart.js and CartItem.js to handle changes. 
      */
     const updatingTheQuantityOfCartItems = () => {
-        const updatedCartItems = [...JSON.parse(localStorage.getItem('CartItems'))];
+        const updatedCartItems = [...JSON.parse(localStorage.getItem('cartItems'))];
         setCartItems(updatedCartItems);
     }
     
+    /**
+     * Function which is called upon when a condition is not meeting our requirement on clicking checkout button
+     * @param {string} errorMessage 
+     *  Takes the error message as a string and is shown the screen and again hides it after timer goes off
+     */
+    const showAndHideErrorMessage = (errorMessage) => {
+        const timer = 3000;
+        setShowErrorMessage(errorMessage);
+        setTimeout(()=>{setShowErrorMessage('')}, timer);
+    }
 
     /**
      * Function which is called upon clicking the checkout button
-     * First checks whether cart is empty or not if empty shows alert message and navigates the user to products page
-     * If cart has items and address is not filled then alert message is shown
-     * If address field is less than 20 characters then alert message is shown
+     * First checks whether cart is empty or not if empty shows alert message to add atleast one item to cart
+     * If cart has items and address is not filled then alert message is shown to enter valid address
+     * If address field is less than 20 characters then alert message is shown to enter 20 character long address
      * If everything is fine then user will be navigated to thanks page and keys in local storage will be set to empty arrays
      */
     const handleCheckout = () => {
         if(cartItems.length===0){
-            alert('Add atleast one product to Checkout!');
-            navigate('/');
+            showAndHideErrorMessage('Add atleast one product to cart to checkout');
         }
-        else if(address===''){
-            alert('Enter valid address');
+        else if(address === ''){
+            showAndHideErrorMessage('Enter a valid address');
         }
         else if(address.length<20){
-            alert('Address should be atleast 20 characters');
+            showAndHideErrorMessage('Address should be atleast 20 characters');
         }
         else{
             navigate('/thanks');
@@ -101,7 +111,6 @@ export default function Cart(){
     return (
         <>
         <Header userInCartsPage={true}/>
-
         <div className="parent-div">
 
             {/* This stack is for dynamically loading the cart items of the user according to changes, handleChange prop connects Cart and CartItem*/}
@@ -135,6 +144,10 @@ export default function Cart(){
                         value={address} 
                         onChange={(e)=>setAddress(e.target.value)}
                     />
+
+                    {/* Showing and hiding error message */}
+                    {showErrorMessage && <div className="error-message"><span>{showErrorMessage}</span></div>}
+
                     <button onClick={handleCheckout}>
                         CHECKOUT
                     </button>

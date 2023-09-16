@@ -9,3 +9,10 @@
   text-overflow: ellipsis;
   font-weight: bold;
 }
+.message{
+  color: green;
+  background-color: rgb(163, 238, 194);
+  text-align: center;
+  font-size: smaller;
+  font-weight: 800;
+}

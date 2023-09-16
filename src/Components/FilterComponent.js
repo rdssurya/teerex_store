@@ -17,7 +17,7 @@ import '../Styles/FilterComponent.css';
  */
 
 export default function FilterComponent (props) {
-    const allProducts = [...JSON.parse(localStorage.getItem('AllProducts'))];
+    const allProducts = [...JSON.parse(localStorage.getItem('allProducts'))];
     const searchedProducts = [...JSON.parse(localStorage.getItem('searchedProductsByUser'))];
     const filters = JSON.parse(localStorage.getItem('appliedFilters'));
 

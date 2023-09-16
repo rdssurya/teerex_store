@@ -4,3 +4,12 @@
   flex-wrap: wrap;
   margin: auto;
 }
+.error-message{
+  display: flex;
+  justify-content: center;
+  color: red;
+  font-size: smaller;
+  font-weight: bolder;
+  background-color: blanchedalmond;
+  text-align: center;
+}

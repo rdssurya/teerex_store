@@ -21,10 +21,14 @@ import "../Styles/Products.css";
  * @property {string} color - color of the product
  */
 
+
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [searchedWord, setSearchedWord] = useState('');
   const [filtersButtonIsClosed, setFiltersButtonIsClosed] = useState(true);
+  const [currentlyShowing, setCurrentlyShowing] = useState('ALL PRODUCTS');
+  const [error, setError] = useState(null);
+
 
   /**
    * useEffect Hook to retrieve JSON data from API endpoint on page load
@@ -33,16 +37,7 @@ export default function Products() {
    * Even if one array is not present in local Storage that means we need to initialise all the arrays
    */
   useEffect(() => {
-    if (localStorage.getItem("CartItems") === null) {
-      localStorage.setItem("CartItems", JSON.stringify([]));
-      localStorage.setItem("AllProducts", JSON.stringify([]));
-      localStorage.setItem("searchedProductsByUser", JSON.stringify([]));
-      localStorage.setItem('appliedFilters',JSON.stringify({
-        gender: [],
-        color: [],
-        type: []
-    }));
-    }
+    setEmptyArraysInLocalStorage();
     makingAPICallToFetchProducts();
   }, []);
 
@@ -50,71 +45,105 @@ export default function Products() {
    * Definition of makingAPICallToFetchProducts()
    * Function that is called inside useEffect Hook on intial page load
    *
-   *  @returns { Array.<Product> }
-   *      Array of objects with complete data on all available products
-   *  Stores the details of all available products to localStorage as well with key name AllProducts
+   *  @returns { Array.<Product> } - Array of products
+   *      Array of product objects with complete data on all available products
+   *  Stores the details of all available products in localStorage as well with key name allProducts
    *
    * API endpoint - GET 'https://geektrust.s3.ap-southeast-1.amazonaws.com/coding-problems/shopping-cart/catalogue.json'
    *
    */
-  async function makingAPICallToFetchProducts() {
+  const makingAPICallToFetchProducts = async () => {
     try {
       const url =
         "https://geektrust.s3.ap-southeast-1.amazonaws.com/coding-problems/shopping-cart/catalogue.json";
       const response = await axios.get(url);
       setProducts([...response.data]);
-      localStorage.setItem("AllProducts", JSON.stringify([...response.data]));
+      localStorage.setItem("allProducts", JSON.stringify([...response.data]));
     } catch (e) {
-      alert("NETWORK ERROR. Try again after sometime.");
-    }
-  }
-
-  /**
-   * Definition of search box handler
-   * Function which is called when user clicks on search button after trying to search for a product
-   * @param {string} text
-   *      Text is taken from the input text field and is used to filter the products
-   * If text is an empty string AllProducts from the local storage will be shown
-   * In other cases products whose name includes the given text will be filtered and will be shown
-   * @returns {Array.<Product>}
-   *       Updates the products array and updates searchedProductsByUser in local storage
-   */
-  const searchTheInputValue = (text) => {
-    setSearchedWord(text);
-    const availableProducts = JSON.parse(localStorage.getItem("AllProducts"));
-    if (text === "") {
-      setProducts([...availableProducts]);
-    } else {
-      const givenInputWord = text.trim();
-      const searchResults = availableProducts.filter((product) => {
-        return product.name
-          .toLowerCase()
-          .includes(givenInputWord.toLowerCase());
-      });
-      setProducts([...searchResults]);
-      localStorage.setItem(
-        "searchedProductsByUser",
-        JSON.stringify([...searchResults])
-      );
+      setError(e.message);
     }
   };
 
+  /**
+   * Function which can be used to initialize an array of keys to empty arrays in local storage
+   * @param {Array.<string>} arrayOfKeys 
+   * Used when checkout button is clicked to set all the required keys of local storgage to []
+   */
+  const setEmptyArraysInLocalStorage = () => {
+    const keysOfLocalStorage = ['cartItems','allProducts','searchedProductsByUser'];
+    keysOfLocalStorage.forEach((key) => {
+      localStorage.setItem( key, JSON.stringify([]));
+    });
+    localStorage.setItem('appliedFilters',JSON.stringify({
+      gender: [],
+      color: [],
+      type: []
+    }));
+  };
+
+  /**
+   * Function to search products based on a search keyword
+   * @param {string} text - The search keyword
+   * @param {Array.<Product>} availableProducts - Array of all available products
+   * If the text is an empty string it will return all the available products
+   * In other cases it will return a products array where all the products include that search value in thier name property
+   * @returns {Array.<Product>} - Array of searched products
+   */
+  const searchProducts = (text, availableProducts) => {
+    if (!text) {
+      return availableProducts;
+    }
+    const givenInputWord = text.trim().toLowerCase();
+    return availableProducts.filter((product) =>
+      product.name.toLowerCase().includes(givenInputWord)
+    );
+  };
+
+  /**
+   * Definition of search box handler
+   * Function which is called when user clicks on search button after typing for a product
+   * @param {string} text - Searched Value in text box
+   *      Text is taken from the input text field and is used to search the products
+   * Text and available products in our store are passed as arguments to searchProducts function
+   * Returned value from above function updates the products array and updates searchedProductsByUser in local storage
+   * Finally We set search value to empty string and filters button will be closed.
+   */
+  const searchTheInputValue = (text) => {
+    const availableProducts = JSON.parse(localStorage.getItem("allProducts")); 
+    const searchedProducts = searchProducts(text, availableProducts);
+    setCurrentlyShowing(text ? text.toUpperCase() : 'ALL PRODUCTS');
+    setProducts(searchedProducts); 
+    localStorage.setItem("searchedProductsByUser", JSON.stringify(searchedProducts));
+    setFiltersButtonIsClosed(true); 
+    setSearchedWord('');
+  };
+
+  /**
+   * Function which is called on clicking Apply/Clear Filters
+   * If previously the filters are closed(not displayed) i.e. button is closed before clicking event
+   * Then first all the filters are set empty arrays in local storage so as to allow user to apply filters afresh.
+   * If previously the filters are open (displayed) i.e. button is open before clicking event
+   * All the products will be shown on the screen
+   */
   const handleFiltersClick = () => {
-    setFiltersButtonIsClosed(!filtersButtonIsClosed);
-    setProducts([...JSON.parse(localStorage.getItem('AllProducts'))]);
-    filtersButtonIsClosed ?
+    if (filtersButtonIsClosed){
         localStorage.setItem('appliedFilters',JSON.stringify({
         gender: [],
         color: [],
         type: []
-      })) : setSearchedWord('');
+      }));
+    }else {
+      setCurrentlyShowing("ALL PRODUCTS")
+      setProducts(JSON.parse(localStorage.getItem('allProducts')));
+    }
+    setFiltersButtonIsClosed(!filtersButtonIsClosed);
   }
 
   /**
    * Updates the products list according to the applied filters
-   * Function which is called when there is a change of filters
+   * Function which is called when there is a change in applied filters
    *
-   * @param { Array.<Product> } arr
+   * @param { Array.<Product> } filteredProducts - Array of filtered products
    *      Array of objects with complete data on all products according to filters
    * This function is PASSED AS PROPS TO FILTERS component which is used whenever there is change of filters
    * Updates the products array
@@ -126,18 +155,22 @@ export default function Products() {
   // Products component which includes Header, search bar, responsive products grid, responsive filters component and other buttons as required
   return (
     <>
+      {error ?  <div className="error">{error}</div>:
+      <>
       <Header />
       <div className="text-field">
         <input
           type="text"
           name="searchBar"
           value = {searchedWord}
-          onChange={(e) => searchTheInputValue(e.target.value)}
+          onChange={(e) => setSearchedWord(e.target.value)}
           placeholder="Search (Ex: Polo)"
         />
+        <button onClick={() => searchTheInputValue(searchedWord)}>Search</button>
       </div>
-
+      {/* Container with products and filters */}
       <Grid container>
+
         <Grid item className="display-filters-md" md={3} sm={3} xs={3}>
           <Button fullWidth variant={'contained'} size="small" onClick={handleFiltersClick}>
             <span className="filters-btn">Apply/Clear Filters</span>
@@ -148,6 +181,7 @@ export default function Products() {
             <Filters listedProducts={products} updaterProp={filteredProductsListUpdater} />
           )}
         </Grid>
+
         {products.length === 0 ? (
           <Grid item md={9} sm={9} xs={9} textAlign={'center'} >
             <h2>
@@ -157,6 +191,7 @@ export default function Products() {
           </Grid>
         ) : (
           <Grid item  md={9} sm={9} xs={9} paddingRight={'2rem'}>
+            <h3>Currently Showing: {currentlyShowing}</h3>
             <Grid container spacing={3} paddingX={"2px"}>
               {products.map((product) => (
                 <Grid item key={product.id} lg={3} md={4} sm={6} xs={12}>
@@ -172,7 +207,7 @@ export default function Products() {
             </Grid>
           </Grid>
         )}
-      </Grid>
+      </Grid></>}
     </>
   );
 }

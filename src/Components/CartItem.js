@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {
     Box,
     Card,
@@ -23,10 +23,12 @@ import '../Styles/CartItem.css';
 export default function CartItem(props){
 
     // Retrieving available data on all products from Local Storage
-    const availableProducts=[...JSON.parse(localStorage.getItem('AllProducts'))];
+    const availableProducts=[...JSON.parse(localStorage.getItem('allProducts'))];
     
     // Retrieving the details of cart items added to cart by user from Local Storage
-    const availableCartItems = [...JSON.parse(localStorage.getItem('CartItems'))];
+    const availableCartItems = [...JSON.parse(localStorage.getItem('cartItems'))];
+    const [showErrorMessage, setShowErrorMessage] = useState('');
+
 
 
     /**
@@ -34,7 +36,7 @@ export default function CartItem(props){
      * @param {number} idOfSelectedProduct
      * @param {number} currentQuantity 
      * If user tries to increase the quantity of a particular item greater than the quantity in stock
-     *      An alert message is shown
+     *      An alert message is shown to inform stock limit reached
      * Otherwise quantity will be incremented 
      * We update the array of CartItems in Local Storage
      * ATLAST WE CALL handleChange() function so as to tell the Cart.js that CartItems array has been updated in Local Storage
@@ -45,14 +47,16 @@ export default function CartItem(props){
         const availableQuantityOFTheProduct = selectedProduct.quantity;
 
         if(currentQuantity === availableQuantityOFTheProduct){
-            alert(`Available stock for this product is ${availableQuantityOFTheProduct}. Cannot add more products`);
+            const timer = 3000;
+            setShowErrorMessage('Cannot add more products. Available stock limit reached.');
+            setTimeout(()=>{setShowErrorMessage('')}, timer);
         }
         else{
             const indexOfRequiredCartItem = availableCartItems.findIndex(item => item.id === idOfSelectedProduct);
             availableCartItems[indexOfRequiredCartItem] = {...availableCartItems[indexOfRequiredCartItem],
                 qty : currentQuantity + 1
             };
-            localStorage.setItem('CartItems', JSON.stringify(availableCartItems));
+            localStorage.setItem('cartItems', JSON.stringify(availableCartItems));
         }
 
         props.handleChange();
@@ -81,7 +85,7 @@ export default function CartItem(props){
             };
         }
 
-        localStorage.setItem('CartItems', JSON.stringify(availableCartItems));
+        localStorage.setItem('cartItems', JSON.stringify(availableCartItems));
         props.handleChange();
     };
     
@@ -97,7 +101,7 @@ export default function CartItem(props){
     const handleDelete = (idOfSelectedProduct) => {
         const indexOfRequiredCartItem = availableCartItems.findIndex(item => item.id === idOfSelectedProduct);
         availableCartItems.splice(indexOfRequiredCartItem, 1);
-        localStorage.setItem('CartItems', JSON.stringify(availableCartItems));
+        localStorage.setItem('cartItems', JSON.stringify(availableCartItems));
         props.handleChange();
     };
     
@@ -127,7 +131,7 @@ export default function CartItem(props){
                     <Typography paddingX={'1rem'}>Qty: {props.qty}</Typography>
                     <button onClick={() => {incrementQuantityByOne(props.id, props.qty)} }>+</button>
                 </Stack>
-
+                {showErrorMessage && <div className="error-message"><span>{showErrorMessage}</span></div>}
                 {/* This stack is for delete button to delete the item from the cart */}
                 <Stack margin={'5px'}>
                     <button onClick={() => {handleDelete(props.id)} }>Delete</button>
