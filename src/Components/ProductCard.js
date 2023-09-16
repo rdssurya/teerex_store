@@ -87,10 +87,11 @@ export default function ProductCard(props) {
                 alt={props.name}
                 className='productCard-image'
                 image={props.image}
+                style={{ objectFit: 'fill' }}
             />
 
             <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} paddingX={'1rem'}>
-                <Typography fontWeight={700} fontSize={'20px'}>{props.name}</Typography>
+                <div className="overflow-container">{props.name}</div>
                 <Typography fontWeight={700}>{props.currency} {props.cost}</Typography>
             </Stack>
 

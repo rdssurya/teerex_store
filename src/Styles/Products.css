@@ -5,8 +5,8 @@
   margin: 1rem;
 }
 
-.clear-btn {
-  margin-left: 1rem;
+.filters-btn {
+  font-size: 8px;
 }
 
 .display-filters-md {
@@ -15,16 +15,9 @@
   display: block;
 }
 
-.display-filters-sm {
-  padding: 1rem;
-  display: none;
+@media (min-width: 450px) {
+  .filters-btn{
+    font-size: 15px;
+  }
 }
 
-@media (max-width: 900px) {
-  .display-filters-sm {
-    display: block;
-  }
-  .display-filters-md {
-    display: none;
-  }
-}

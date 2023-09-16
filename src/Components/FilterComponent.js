@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
-
+import React from "react";
+import '../Styles/FilterComponent.css';
 
 // Definition of Data Structures used
 /**
@@ -19,44 +18,45 @@ import { Typography } from "@mui/material";
 
 export default function FilterComponent(props){
     const allProducts = [...JSON.parse(localStorage.getItem('AllProducts'))];
-    const searchedOrFilteredProducts = [...JSON.parse(localStorage.getItem('searchedOrFilteredProductsByUser'))];
-    const [filters, setFilters] = useState({
-        gender: [],
-        color: [],
-        type: []
-    });
-
-    useEffect(() => {
-        filterProducts();
-    }, [filters]);
-
-    function filterProducts () {
-        const productsList = searchedOrFilteredProducts.length === 0 ? [...allProducts] : [...searchedOrFilteredProducts]
-        const filteredProducts = productsList.filter((product) => {
-            const genderFilter = filters.gender.length === 0 || filters.gender.includes(product.gender);
-            const colorFilter = filters.color.length === 0 || filters.color.includes(product.color);
-            const typeFilter = filters.type.length === 0 || filters.type.includes(product.type);
-            return genderFilter && colorFilter && typeFilter;
-        });
-        props.handlingUpdates(filteredProducts);
-    }
+    const searchedProducts = [...JSON.parse(localStorage.getItem('searchedProductsByUser'))];
+    const filters = JSON.parse(localStorage.getItem('appliedFilters'));
 
     
-    const toggleCheckbox = (filterKey, value) => {
-        setFilters((prevFilters) => ({
-          ...prevFilters,
-          [filterKey.toLowerCase()]: prevFilters[filterKey.toLowerCase()].includes(value)
-            ? prevFilters[filterKey.toLowerCase()].filter((item) => item !== value)
-            : [...prevFilters[filterKey.toLowerCase()], value]
-        }));
+    function filterProducts (filters) {
+        const productsList = searchedProducts.length === 0 ? [...allProducts] : [...searchedProducts];
+        const filteredByGender = performingFilteringOperation(productsList, filters, 'gender');
+        const filteredByColor = performingFilteringOperation(filteredByGender, filters, 'color');
+        const filteredByType = performingFilteringOperation(filteredByColor, filters, 'type');
+        const filteredProductsWithAllTheAppliedFilters = [...filteredByType];
+
+        props.handlingUpdates(filteredProductsWithAllTheAppliedFilters);
+    }
+
+
+    function performingFilteringOperation (productsToBeFiltered, filtersObject, filterKey){
+        const filteredProductsAccordingToFilterKey = productsToBeFiltered.filter((product) => 
+            filtersObject[filterKey].length === 0 || filtersObject[filterKey].includes(product[filterKey])
+        );
+        return filteredProductsAccordingToFilterKey;
+    }
+    
+    const toggleCheckbox = (filterKey, checkboxValue) => {
+        const updatedFilters = {...filters,
+            [filterKey.toLowerCase()]: filters[filterKey.toLowerCase()].includes(checkboxValue)
+                  ? filters[filterKey.toLowerCase()].filter((item) => item !== checkboxValue)
+                  : [...filters[filterKey.toLowerCase()], checkboxValue]
+        }
+        localStorage.setItem('appliedFilters',JSON.stringify(updatedFilters));
+        filterProducts(updatedFilters);
       };
     
     
     return (
-        <div>
-            <Typography fontWeight={'700'}>{props.filterKey}</Typography>
+        <div style={{padding: '1rem 0rem 1rem 0rem'}}>
+            <span className="filter-heading">{props.filterKey}</span>
+            <br/>
             {props.values.map((filterValue)=>(
-                <label key={filterValue}>
+                <label key={filterValue} className="filter-values">
                     <input 
                         type="checkbox" 
                         name={props.filterKey}

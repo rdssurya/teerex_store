@@ -1,4 +1,11 @@
-.productCard-image {
-  height: 300px;
-  object-fit: fill;
+.productCard-image{
+  height: 250px;
+  width: fit-content;
+  overflow: hidden;
+}
+.overflow-container {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: bold;
 }

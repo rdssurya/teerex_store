@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import FilterComponent from "./FilterComponent";
-import '../Styles/Filters.css'
 
 // Definition of Data Structures used
 /**
@@ -73,9 +72,6 @@ export default function Filters(props){
     // Filters returns a JSX component which provides the FilterComponent with our unique list of filters 
     return (
         <div className="filters-div">
-            <div id="filters-heading">
-                <p>FILTERS</p>
-            </div>
             {/* Dynamically updating the page by passing filters as props to FilterComponent */ }
            {listOfFilters.map((filter)=>(
                 <FilterComponent 

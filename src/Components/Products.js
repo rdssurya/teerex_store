@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import axios from "axios";
 import Header from "./Header";
 import ProductCard from "./ProductCard";
@@ -24,7 +24,6 @@ import "../Styles/Products.css";
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [filtersButtonIsClosed, setFiltersButtonIsClosed] = useState(true);
-  const [pageIsLoaded, setPageIsLoaded] = useState(false);
 
   /**
    * useEffect Hook to retrieve JSON data from API endpoint on page load
@@ -36,10 +35,14 @@ export default function Products() {
     if (localStorage.getItem("CartItems") === null) {
       localStorage.setItem("CartItems", JSON.stringify([]));
       localStorage.setItem("AllProducts", JSON.stringify([]));
-      localStorage.setItem("searchedOrFilteredProductsByUser", JSON.stringify([]));
+      localStorage.setItem("searchedProductsByUser", JSON.stringify([]));
+      localStorage.setItem('appliedFilters',JSON.stringify({
+        gender: [],
+        color: [],
+        type: []
+    }));
     }
     makingAPICallToFetchProducts();
-    setPageIsLoaded(true);
   }, []);
 
   /**
@@ -73,7 +76,7 @@ export default function Products() {
    * If text is an empty string AllProducts from the local storage will be shown
    * In other cases products whose name includes the given text will be filtered and will be shown
    * @returns {Array.<Product>}
-   *       Updates the products array and updates searchedOrFilteredProductsByUser in local storage
+   *       Updates the products array and updates searchedProductsByUser in local storage
    */
   const searchTheInputValue = (text) => {
     if (text === "") {
@@ -87,11 +90,21 @@ export default function Products() {
       });
       setProducts([...searchResults]);
       localStorage.setItem(
-        "searchedOrFilteredProductsByUser",
+        "searchedProductsByUser",
         JSON.stringify([...searchResults])
       );
     }
   };
+
+  const handleFiltersClick = () => {
+    setFiltersButtonIsClosed(!filtersButtonIsClosed);
+    setProducts([...JSON.parse(localStorage.getItem('AllProducts'))]);
+    localStorage.setItem('appliedFilters',JSON.stringify({
+      gender: [],
+      color: [],
+      type: []
+    }));
+  }
 
   /**
    * Updates the products list according to the applied filters
@@ -103,73 +116,45 @@ export default function Products() {
    * Updates the products array
    */
   const filteredProductsListUpdater = (filteredProducts) => {
-    setProducts([...filteredProducts]);
+    setProducts(filteredProducts);
   };
 
   // Products component which includes Header, search bar, responsive products grid, responsive filters component and other buttons as required
   return (
     <>
       <Header />
-
-      {/* Search Box, Search Button and Clear All filters Button with in-built event handler functions */}
       <div className="text-field">
-        <div>
-          <input
-            type="text"
-            name="searchBar"
-            onChange={(e) => searchTheInputValue(e.target.value)}
-            placeholder="Search (Ex: Polo)"
-          />
-        </div>
-        <div className="clear-btn">
-          <button
-            onClick={() => {
-                window.location.reload();
-                localStorage.clear();
-                setTimeout(() => {
-                    window.location.reload();
-                }, 100);
-            }}
-          >
-            Clear All Filters
-          </button>
-        </div>
+        <input
+          type="text"
+          name="searchBar"
+          onChange={(e) => searchTheInputValue(e.target.value)}
+          placeholder="Search (Ex: Polo)"
+        />
       </div>
 
-      {/* Filters button, Filters Component which are displayed on smaller screens by clicking the filters button */}
-      <div className="display-filters-sm">
-        <button
-          onClick={() => setFiltersButtonIsClosed(!filtersButtonIsClosed)}
-        >
-          Filters
-        </button>
-        {filtersButtonIsClosed ? (
-          <></>
-        ) : (
-          <Filters listedProducts={products} updaterProp={filteredProductsListUpdater} />
-        )}
-      </div>
-
-      {/* Grid container with filters component and products cards. Filters component here is displayed on larger screens */}
       <Grid container>
-
-        {/* After the page loads the filters component is shown on larger screens here */}
-        <Grid item className="display-filters-md" md={2}>
-          {pageIsLoaded ? <Filters updaterProp={filteredProductsListUpdater} /> : <></>}
+        <Grid item className="display-filters-md" md={3} sm={3} xs={3}>
+          <Button fullWidth variant={'contained'} size="small" onClick={handleFiltersClick}>
+            <span className="filters-btn">Apply/Clear Filters</span>
+          </Button>
+          {filtersButtonIsClosed ? (
+            <></>
+          ) : (
+            <Filters listedProducts={products} updaterProp={filteredProductsListUpdater} />
+          )}
         </Grid>
-
-        {/** This is the Grid container with products cards which will be displayed according to screen sizes 
-                    and sorry message will be shown if no products are available */}
         {products.length === 0 ? (
-          <h2>
-            Sorry! Products based on your requirements are not available. Clear
-            filters to view available products.
-          </h2>
+          <Grid item md={9} textAlign={'center'} >
+            <h2>
+              Sorry! Products based on your requirements are not available. Clear
+              filters to view available products.
+            </h2>
+          </Grid>
         ) : (
-          <Grid item md={10}>
+          <Grid item  md={9} sm={9} xs={9} paddingRight={'2rem'}>
             <Grid container spacing={3} paddingX={"2px"}>
               {products.map((product) => (
-                <Grid item key={product.id} xs={12} sm={6} md={4}>
+                <Grid item key={product.id} lg={3} md={4} sm={6} xs={12}>
                   <ProductCard
                     name={product.name}
                     cost={product.price}
