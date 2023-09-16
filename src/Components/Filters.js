@@ -22,7 +22,7 @@ export default function Filters(props){
     /**
      * Use Effect Hook ensures that we have our list of filters with us once the component mounts
      */
-    useEffect(()=>{
+    useEffect( () => {
         const availableProducts = [...JSON.parse(localStorage.getItem('AllProducts'))];
 
         /**
@@ -32,7 +32,7 @@ export default function Filters(props){
          * Returns us the unique filters array with each element in the format [ filterKey, [filterValues]]
          * Ex: [["Gender",["Male","Female"]],["Color",["Red","Black"]]] 
          */
-        const arrayOfUniqueFilterValues = (arrayOfAvailableProducts) => {
+        const arrayOfUniqueFilterKeysAndValues = (arrayOfAvailableProducts) => {
             const uniqueGenders = ['Gender', getUniqueFilterValues(arrayOfAvailableProducts,"gender")];
             const uniqueTypes = ['Type', getUniqueFilterValues(arrayOfAvailableProducts,"type")];
             const uniqueColors = ['Color', getUniqueFilterValues(arrayOfAvailableProducts,"color")];
@@ -40,10 +40,11 @@ export default function Filters(props){
         }
 
         //calling the above function
-        arrayOfUniqueFilterValues(availableProducts);
+        arrayOfUniqueFilterKeysAndValues(availableProducts);
 
     } , []);
     
+
     /**
      * Extracts unique values from a list of products based on a specified filter key
      * 
@@ -53,9 +54,9 @@ export default function Filters(props){
      * Ex: Output: ["Male","Female"]
      */
     const getUniqueFilterValues = ( productsList, filterKey) => {
-        const arrayOfFilterValues = productsList.map((product) => product[filterKey]);
-        const givenValues = [...arrayOfFilterValues];
-        return  [...new Set(givenValues)];
+        const duplicateFilterValues = productsList.map((product) => product[filterKey]);
+        const uniqueFilterValues = [...new Set(duplicateFilterValues)];
+        return uniqueFilterValues;
     }
 
     /**
@@ -65,8 +66,8 @@ export default function Filters(props){
      * This function calls the filteredProductsListUpdater in Products component which updates the
      * products list with the filtered products accordingly
      */
-    const connectorFunction = (filteredProductsArray)=>{
-        props.updaterProp(filteredProductsArray);
+    const connectorFunction = (updatedFilteredProducts)=>{
+        props.updaterProp(updatedFilteredProducts);
     }
 
     // Filters returns a JSX component which provides the FilterComponent with our unique list of filters 
@@ -76,7 +77,7 @@ export default function Filters(props){
            {listOfFilters.map((filter)=>(
                 <FilterComponent 
                     filterKey={filter[0]} 
-                    values={filter[1]} 
+                    filterValues={filter[1]} 
                     key={filter[0]} 
                     handlingUpdates={connectorFunction}
                 />

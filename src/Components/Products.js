@@ -23,6 +23,7 @@ import "../Styles/Products.css";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [searchedWord, setSearchedWord] = useState('');
   const [filtersButtonIsClosed, setFiltersButtonIsClosed] = useState(true);
 
   /**
@@ -79,11 +80,13 @@ export default function Products() {
    *       Updates the products array and updates searchedProductsByUser in local storage
    */
   const searchTheInputValue = (text) => {
+    setSearchedWord(text);
+    const availableProducts = JSON.parse(localStorage.getItem("AllProducts"));
     if (text === "") {
-      setProducts([...JSON.parse(localStorage.getItem("AllProducts"))]);
+      setProducts([...availableProducts]);
     } else {
       const givenInputWord = text.trim();
-      const searchResults = products.filter((product) => {
+      const searchResults = availableProducts.filter((product) => {
         return product.name
           .toLowerCase()
           .includes(givenInputWord.toLowerCase());
@@ -99,11 +102,12 @@ export default function Products() {
   const handleFiltersClick = () => {
     setFiltersButtonIsClosed(!filtersButtonIsClosed);
     setProducts([...JSON.parse(localStorage.getItem('AllProducts'))]);
-    localStorage.setItem('appliedFilters',JSON.stringify({
-      gender: [],
-      color: [],
-      type: []
-    }));
+    filtersButtonIsClosed ?
+        localStorage.setItem('appliedFilters',JSON.stringify({
+        gender: [],
+        color: [],
+        type: []
+      })) : setSearchedWord('');
   }
 
   /**
@@ -127,6 +131,7 @@ export default function Products() {
         <input
           type="text"
           name="searchBar"
+          value = {searchedWord}
           onChange={(e) => searchTheInputValue(e.target.value)}
           placeholder="Search (Ex: Polo)"
         />
@@ -144,7 +149,7 @@ export default function Products() {
           )}
         </Grid>
         {products.length === 0 ? (
-          <Grid item md={9} textAlign={'center'} >
+          <Grid item md={9} sm={9} xs={9} textAlign={'center'} >
             <h2>
               Sorry! Products based on your requirements are not available. Clear
               filters to view available products.
