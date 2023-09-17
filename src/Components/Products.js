@@ -77,7 +77,8 @@ export default function Products() {
     localStorage.setItem('appliedFilters',JSON.stringify({
       gender: [],
       color: [],
-      type: []
+      type: [],
+      price: []
     }));
   };
 
@@ -133,7 +134,8 @@ export default function Products() {
         localStorage.setItem('appliedFilters',JSON.stringify({
         gender: [],
         color: [],
-        type: []
+        type: [],
+        price: []
       }));
     }else {
       setCurrentlyShowing("");
@@ -188,7 +190,7 @@ export default function Products() {
 
         <div>
           {products.length === 0 ? (
-            <h2 style={{textAlign:'center'}}>
+            <h2 className="sorry-msg">
               Sorry! Products based on your requirements are not available. Clear
               filters to view available products.
             </h2>
@@ -196,7 +198,7 @@ export default function Products() {
               {currentlyShowing !== '' ? <h3>Currently Showing: {currentlyShowing}</h3> : <></>}
               <div className="products-grid-container">
                 {products.map((product) => (
-                  <div key={product.id} style={{margin:'1rem'}}>
+                  <div key={product.id} className="product-card">
                     <ProductCard
                       name={product.name}
                       cost={product.price}

@@ -92,7 +92,7 @@ export default function ProductCard(props) {
             {showMessage && <div className="message"><span>{showMessage}</span></div>}
 
             {/* Add to cart button */}
-            <div style={{paddingY:'1rem'}}>
+            <div className='add-to-cart'>
                 <Button onClick={()=>addingProductToCart(localStorage,props)} variant='contained' fullWidth>
                     <AddShoppingCartIcon/> ADD TO CART 
                 </Button>

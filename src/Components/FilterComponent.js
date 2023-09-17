@@ -31,15 +31,16 @@ export default function FilterComponent (props) {
      * Atlast we call the handling updates function provided to us a prop to inform the connectorFunction in Filters Copmonent
      *  that new filters are applied to products and connector function informs the Products component
      */
-    function filterProductsWithUpdatedFilters (updatedFilters) {
+    const filterProductsWithUpdatedFilters = (updatedFilters) => {
         const productsList = searchedProducts.length === 0 ? [...allProducts] : [...searchedProducts];
         const productsFilteredByGender = performingFilteringOperation(productsList, updatedFilters, 'gender');
         const productsFilteredByColor = performingFilteringOperation(productsFilteredByGender, updatedFilters, 'color');
         const productsFilteredByType = performingFilteringOperation(productsFilteredByColor, updatedFilters, 'type');
-        const filteredProductsWithAllTheAppliedFilters = [...productsFilteredByType];
+        const productsFilteredByPrice = performingFilteringOperation(productsFilteredByType, updatedFilters, 'price');
+        const filteredProductsWithAllTheAppliedFilters = [...productsFilteredByPrice];
 
         props.handlingUpdates(filteredProductsWithAllTheAppliedFilters);
-    }
+    };
 
     /**
      * Function which performs filter operation on a list of products with specified filter key
@@ -48,18 +49,36 @@ export default function FilterComponent (props) {
      * @param {Object} filtersObject 
      * @param {string} filterKey
      * Takes a list of products, filtersObject from local storage and filterKey as arguments
-     * Returns all the products from list of given products which have their product[filterKey] value included in their filtersObject[filterKey]
+     * If filterKey is price then filtering will be done according to price by checking all the price ranges selected by the user
+     * and filtering out the products whose price fall in between the selected price ranges and returns the filtered products
+     * In other cases returns all the products from list of given products which have their product[filterKey] value included in their filtersObject[filterKey]
      * Ex: filtersObject['color'] is an array of filterValues like ['Blue','Red','Yellow']
      * Now products with their color property value if included in that above array only those products will be filtered
      * @returns {Array.<Product>}
      */
-    function performingFilteringOperation (productsToBeFiltered, filtersObject, filterKey){
-        const filteredProductsAccordingToFilterKey = productsToBeFiltered.filter((product) => 
-            filtersObject[filterKey].length === 0 || filtersObject[filterKey].includes(product[filterKey])
-        );
-        return filteredProductsAccordingToFilterKey;
-    }
-    
+    const performingFilteringOperation = (productsToBeFiltered, filtersObject, filterKey) => {
+        if (filterKey === 'price') {
+            const filteredProductsAccordingToFilterKey = productsToBeFiltered.filter((product) => {
+              if (filtersObject[filterKey].length === 0) {
+                return true;
+              }
+              const priceRanges = filtersObject[filterKey].map((priceRange) => {
+                const [min, max] = priceRange.split('-').map(Number);
+                return { min, max };
+              });
+              return priceRanges.some(({ min, max }) => product.price >= min && product.price <= max);
+            });
+          
+            return filteredProductsAccordingToFilterKey;
+        }
+        else{
+            const filteredProductsAccordingToFilterKey = productsToBeFiltered.filter((product) => 
+                filtersObject[filterKey].length === 0 || filtersObject[filterKey].includes(product[filterKey])
+            );
+            return filteredProductsAccordingToFilterKey;
+        }
+    };
+
     /**
      * Function which will be called on clicking a checkbox of the filters
      * 
@@ -75,20 +94,18 @@ export default function FilterComponent (props) {
      */
     const handleCheckboxClick = (filterKey, checkboxValue) => {
         filterKey = filterKey.toLowerCase();
-
         const updatedFilters = {...filters,
             [filterKey]: filters[filterKey].includes(checkboxValue) ?
                 filters[filterKey].filter((item) => item !== checkboxValue)
                 : [...filters[filterKey], checkboxValue]
         };
-
         localStorage.setItem('appliedFilters',JSON.stringify(updatedFilters));
         filterProductsWithUpdatedFilters(updatedFilters);
       };
     
     // Return a component with Filter Key as heading and Filter values as checkboxes
     return (
-        <div style={{padding: '1rem 0rem 1rem 0rem'}}>
+        <div className="filter-component">
             <span className="filter-heading">{props.filterKey}</span>
             <br/>
             {props.filterValues.map((filterValue)=>(
