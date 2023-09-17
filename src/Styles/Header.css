@@ -1,9 +1,13 @@
 .header {
   padding: 1rem 1rem 0rem 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
-
-.companyName {
-  font-size: large;
-  font-weight: 1000;
-  font-family: "Courier New", Courier, monospace;
+.header-components{
+  display: flex;
+  flex-direction: row;
+  font-family: fantasy;
+  align-items: center;
 }

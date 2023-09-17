@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Stack, Typography, Box } from "@mui/material";
+import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import ShoppingCartCheckoutRoundedIcon from "@mui/icons-material/ShoppingCartCheckoutRounded";
 import ShoppingBagRoundedIcon from "@mui/icons-material/ShoppingBagRounded";
@@ -10,33 +10,27 @@ const Header = () => {
   // Header with the store title at one end and products, cart buttons on the other end
   return (
     <>
-      <Box className="header">
-        <Stack
-          direction={"row"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-        >
-          <Stack direction={"row"}>
-            <StorefrontOutlinedIcon />
-            <Typography fontFamily={"fantasy"}>TEEREX STORE</Typography>
-          </Stack>
+      <div className="header">
+        <div className="header-components">
+          <StorefrontOutlinedIcon />
+          <span>TEEREX STORE</span>
+        </div>
 
-          <Stack direction={"row"}>
-            <Link to="/">
-              <Button>
-                <ShoppingBagRoundedIcon />
-                PRODUCTS
-              </Button>
-            </Link>
-            <Link to="/cart">
-              <Button variant="outlined">
-                <ShoppingCartCheckoutRoundedIcon />
-                CART
-              </Button>
-            </Link>
-          </Stack>
-        </Stack>
-      </Box>
+        <div className="header-components">
+          <Link to="/">
+            <Button>
+              <ShoppingBagRoundedIcon />
+              PRODUCTS
+            </Button>
+          </Link>
+          <Link to="/cart">
+            <Button variant="outlined">
+              <ShoppingCartCheckoutRoundedIcon />
+              CART
+            </Button>
+          </Link>
+        </div>
+      </div>
       <hr />
     </>
   );

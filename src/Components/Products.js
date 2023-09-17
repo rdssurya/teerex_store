@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import axios from "axios";
 import Header from "./Header";
 import ProductCard from "./ProductCard";
@@ -26,19 +26,18 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [searchedWord, setSearchedWord] = useState('');
   const [filtersButtonIsClosed, setFiltersButtonIsClosed] = useState(true);
-  const [currentlyShowing, setCurrentlyShowing] = useState('ALL PRODUCTS');
+  const [currentlyShowing, setCurrentlyShowing] = useState('');
   const [error, setError] = useState(null);
 
 
   /**
    * useEffect Hook to retrieve JSON data from API endpoint on page load
    * and to intialize our required arrays as empty strings in Local Storage
-   * We use these arrays across the pages to easily access required data
-   * Even if one array is not present in local Storage that means we need to initialise all the arrays
+   * Both the actions are done by call their respective functions
    */
   useEffect(() => {
-    setEmptyArraysInLocalStorage();
     makingAPICallToFetchProducts();
+    setEmptyArraysInLocalStorage();
   }, []);
 
   /**
@@ -50,7 +49,7 @@ export default function Products() {
    *  Stores the details of all available products in localStorage as well with key name allProducts
    *
    * API endpoint - GET 'https://geektrust.s3.ap-southeast-1.amazonaws.com/coding-problems/shopping-cart/catalogue.json'
-   *
+   * Handles any errors by displaying an error message on the screen
    */
   const makingAPICallToFetchProducts = async () => {
     try {
@@ -65,9 +64,10 @@ export default function Products() {
   };
 
   /**
-   * Function which can be used to initialize an array of keys to empty arrays in local storage
-   * @param {Array.<string>} arrayOfKeys 
-   * Used when checkout button is clicked to set all the required keys of local storgage to []
+   * Function which is called in useEffect Hook
+   * This function sets the required keys to empty arrays on local storage
+   * It is done so as to use the corresponding data that we store in those arrays across our pages
+   * Also we initialise appliedFilters to the required data structure 
    */
   const setEmptyArraysInLocalStorage = () => {
     const keysOfLocalStorage = ['cartItems','allProducts','searchedProductsByUser'];
@@ -94,9 +94,10 @@ export default function Products() {
       return availableProducts;
     }
     const givenInputWord = text.trim().toLowerCase();
-    return availableProducts.filter((product) =>
+    const searchResults = availableProducts.filter((product) =>
       product.name.toLowerCase().includes(givenInputWord)
     );
+    return searchResults;
   };
 
   /**
@@ -105,13 +106,15 @@ export default function Products() {
    * @param {string} text - Searched Value in text box
    *      Text is taken from the input text field and is used to search the products
    * Text and available products in our store are passed as arguments to searchProducts function
+   * We will set currently showing results with the typed text or "ALL PRODUCTS" accordingly
    * Returned value from above function updates the products array and updates searchedProductsByUser in local storage
    * Finally We set search value to empty string and filters button will be closed.
    */
   const searchTheInputValue = (text) => {
     const availableProducts = JSON.parse(localStorage.getItem("allProducts")); 
     const searchedProducts = searchProducts(text, availableProducts);
-    setCurrentlyShowing(text ? text.toUpperCase() : 'ALL PRODUCTS');
+
+    setCurrentlyShowing(text ? text.toUpperCase() : '');
     setProducts(searchedProducts); 
     localStorage.setItem("searchedProductsByUser", JSON.stringify(searchedProducts));
     setFiltersButtonIsClosed(true); 
@@ -121,9 +124,9 @@ export default function Products() {
   /**
    * Function which is called on clicking Apply/Clear Filters
    * If previously the filters are closed(not displayed) i.e. button is closed before clicking event
-   * Then first all the filters are set empty arrays in local storage so as to allow user to apply filters afresh.
+   * Then first all the filters are set to empty arrays in local storage so as to allow user to apply filters afresh.
    * If previously the filters are open (displayed) i.e. button is open before clicking event
-   * All the products will be shown on the screen
+   * All the products will be shown on the screen by updating products array once we click the filters button (closing the filters)
    */
   const handleFiltersClick = () => {
     if (filtersButtonIsClosed){
@@ -133,8 +136,9 @@ export default function Products() {
         type: []
       }));
     }else {
-      setCurrentlyShowing("ALL PRODUCTS")
-      setProducts(JSON.parse(localStorage.getItem('allProducts')));
+      setCurrentlyShowing("");
+      const allAvailableProducts = JSON.parse(localStorage.getItem('allProducts'));
+      setProducts(allAvailableProducts);
     }
     setFiltersButtonIsClosed(!filtersButtonIsClosed);
   }
@@ -155,7 +159,8 @@ export default function Products() {
   // Products component which includes Header, search bar, responsive products grid, responsive filters component and other buttons as required
   return (
     <>
-      {error ?  <div className="error">{error}</div>:
+      {/* If there is an error we show error, else we show products page */}
+      {error ?  <div className="error">{error}</div> :
       <>
       <Header />
       <div className="text-field">
@@ -169,9 +174,8 @@ export default function Products() {
         <button onClick={() => searchTheInputValue(searchedWord)}>Search</button>
       </div>
       {/* Container with products and filters */}
-      <Grid container>
-
-        <Grid item className="display-filters-md" md={3} sm={3} xs={3}>
+      <div className="parent-grid-container">
+        <div className="display-filters-md">
           <Button fullWidth variant={'contained'} size="small" onClick={handleFiltersClick}>
             <span className="filters-btn">Apply/Clear Filters</span>
           </Button>
@@ -180,34 +184,35 @@ export default function Products() {
           ) : (
             <Filters listedProducts={products} updaterProp={filteredProductsListUpdater} />
           )}
-        </Grid>
+        </div>
 
-        {products.length === 0 ? (
-          <Grid item md={9} sm={9} xs={9} textAlign={'center'} >
-            <h2>
+        <div>
+          {products.length === 0 ? (
+            <h2 style={{textAlign:'center'}}>
               Sorry! Products based on your requirements are not available. Clear
               filters to view available products.
             </h2>
-          </Grid>
-        ) : (
-          <Grid item  md={9} sm={9} xs={9} paddingRight={'2rem'}>
-            <h3>Currently Showing: {currentlyShowing}</h3>
-            <Grid container spacing={3} paddingX={"2px"}>
-              {products.map((product) => (
-                <Grid item key={product.id} lg={3} md={4} sm={6} xs={12}>
-                  <ProductCard
-                    name={product.name}
-                    cost={product.price}
-                    image={product.imageURL}
-                    currency={product.currency}
-                    id={product.id}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-        )}
-      </Grid></>}
+            ) : (<>
+              {currentlyShowing !== '' ? <h3>Currently Showing: {currentlyShowing}</h3> : <></>}
+              <div className="products-grid-container">
+                {products.map((product) => (
+                  <div key={product.id} style={{margin:'1rem'}}>
+                    <ProductCard
+                      name={product.name}
+                      cost={product.price}
+                      image={product.imageURL}
+                      currency={product.currency}
+                      id={product.id}
+                    />
+                  </div>
+                ))}
+              </div>
+              </>
+          )}
+        </div>
+      </div>
+      </>
+      }
     </>
   );
 }

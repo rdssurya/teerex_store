@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from "react";
-import { Typography, Stack, TextField, Card } from "@mui/material";
+import { TextField } from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import Header from "./Header";
 import CartItem from "./CartItem";
@@ -42,9 +42,9 @@ export default function Cart(){
      *  Total Items Cost is updated accordingly
      */
     const totalCartValue = (cartItems) => {
-        const newTotalSum = cartItems.reduce((accumulator, currentValue) => {
+        const newTotalSum = cartItems.reduce((totalCost, currentValue) => {
             const product = currentValue.qty * currentValue.cost;
-            return accumulator + product;
+            return totalCost + product;
         }, 0);
         setTotalItemsCost(newTotalSum);
     };
@@ -52,25 +52,36 @@ export default function Cart(){
 
     /**
      * Function which is called upon updating/deleting the quantity of items in CartItem.js (handleChange())
-     * Whenever the quantity is updated or deleted in a cartItem, CartItems array in local storage is updated
+     * Whenever the quantity is updated or deleted in a cartItem, cartItems array in local storage is updated
      * So to reflect that change in /cart this function is called...
      * Connector function between Cart.js and CartItem.js to handle changes. 
      */
-    const updatingTheQuantityOfCartItems = () => {
+    const updatingQuantityOfCartItems = () => {
         const updatedCartItems = [...JSON.parse(localStorage.getItem('cartItems'))];
         setCartItems(updatedCartItems);
-    }
+    };
     
     /**
      * Function which is called upon when a condition is not meeting our requirement on clicking checkout button
      * @param {string} errorMessage 
-     *  Takes the error message as a string and is shown the screen and again hides it after timer goes off
+     *  Takes the error message as an argument and is shown on the screen and again hides it after timer goes off
      */
     const showAndHideErrorMessage = (errorMessage) => {
         const timer = 3000;
         setShowErrorMessage(errorMessage);
         setTimeout(()=>{setShowErrorMessage('')}, timer);
-    }
+    };
+
+    /**
+     * Function which can be used to initialize an array of keys to empty arrays in local storage
+     * @param {Array.<string>} arrayOfKeys 
+     * Used when checkout button is clicked to set all the required keys of local storgage to []
+     */
+    const setEmptyArraysInLocalStorage = ( arrayOfKeys ) => {
+        arrayOfKeys.forEach((key) => {
+            localStorage.setItem( key, JSON.stringify([]));
+        });
+    };
 
     /**
      * Function which is called upon clicking the checkout button
@@ -93,29 +104,17 @@ export default function Cart(){
             navigate('/thanks');
             setEmptyArraysInLocalStorage(keysOfLocalStorage);
         }
-    }
-
-    /**
-     * Function which can be used to initialize an array of keys to empty arrays in local storage
-     * @param {Array.<string>} arrayOfKeys 
-     * Used when checkout button is clicked to set all the required keys of local storgage to []
-     */
-    const setEmptyArraysInLocalStorage = ( arrayOfKeys ) => {
-        arrayOfKeys.forEach((key) => {
-            localStorage.setItem( key, JSON.stringify([]));
-        });
-    }
-
+    };
 
     // Cart page has one column for cart components and another column for total cart value and checkout 
     return (
         <>
-        <Header userInCartsPage={true}/>
+        <Header/>
         <div className="parent-div">
 
-            {/* This stack is for dynamically loading the cart items of the user according to changes, handleChange prop connects Cart and CartItem*/}
-            <Stack marginX={'1rem'}>
-                {cartItems.length === 0 ? <><Typography>Cart is empty!</Typography></> :
+            {/* This is for dynamically loading the cart items of the user according to changes, handleChange prop connects Cart and CartItem*/}
+            <div className="cart-components">
+                {cartItems.length === 0 ? <><p>Cart is empty!</p></> :
                 <>{cartItems.map((cartItem)=>(
                     <CartItem 
                         key={cartItem.id}
@@ -124,35 +123,34 @@ export default function Cart(){
                         cost={cartItem.cost} 
                         qty={cartItem.qty}
                         id={cartItem.id}
-                        handleChange={updatingTheQuantityOfCartItems}
+                        handleChange={updatingQuantityOfCartItems}
                     />
                     ))}
                 </>}
-            </Stack>
+            </div>
 
-            <Card style={{ width: 340, height: 250 }}>
-                {/* This stack is for details of cost all cart products and for adding address and checking out*/}
-                <Stack margin={'1rem'} spacing={1}>
-                    <Typography fontStyle={'oblique'}>Order Summary</Typography>
-                    <Typography fontWeight={'700'}>Total Cart Value: {totalItemsCost} INR</Typography>
+            <div className="order-summary">
+                {/* This is for details of cost all cart products and for adding address and checking out*/}
+                <div className="order-details">
+                    <span>Order Summary</span>
+                    <span>Total Cart Value: {totalItemsCost} INR</span>
                     <TextField
                         label = "Enter delivery address..."
                         multiline
                         rows={3} 
-                        fullWidth 
+                        fullWidth
+                        name="address-field"
                         variant="outlined"
                         value={address} 
                         onChange={(e)=>setAddress(e.target.value)}
                     />
-
-                    {/* Showing and hiding error message */}
-                    {showErrorMessage && <div className="error-message"><span>{showErrorMessage}</span></div>}
-
                     <button onClick={handleCheckout}>
                         CHECKOUT
                     </button>
-                </Stack>
-            </Card>
+                </div>
+                {/* Showing and hiding error message */}
+                {showErrorMessage && <div className="error-message"><span>{showErrorMessage}</span></div>}
+            </div>
 
         </div>
         </>

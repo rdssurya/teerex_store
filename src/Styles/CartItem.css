@@ -1,5 +1,35 @@
-.cartCard-image {
+.cart-card{
+  width: 300px;
+  height: 150px;
+  border: 1px solid #CCCCCC ;
+  border-radius: 5px;
+  padding-top: 15px;
+  margin: 1rem 0rem;
+}
+.cart-details{
+  display: flex;
+  flex-direction: 'row';
+  justify-content: space-evenly;
+}
+.cart-image {
   height: 100px;
+  width: 100px;
+  object-fit: 'contain';
+}
+.item-details{
+  display: flex;
+  flex-direction: column;
+  font-weight: 700;
+  font-size: 15px;
+}
+.item-qty{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 1rem;
+}
+.quantity{
+  padding: 0rem 1rem;
 }
 .error-message{
   display: flex;
