@@ -32,7 +32,7 @@ export default function Products() {
 
   /**
    * useEffect Hook to retrieve JSON data from API endpoint on page load
-   * and to intialize our required arrays as empty strings in Local Storage
+   * and to intialize our required arrays as empty strings in Local Storage if required
    * Both the actions are done by call their respective functions
    */
   useEffect(() => {
@@ -47,7 +47,9 @@ export default function Products() {
    *  @returns { Array.<Product> } - Array of products
    *      Array of product objects with complete data on all available products
    *  Stores the details of all available products in localStorage as well with key name allProducts
-   *
+   *  Sets the products array with the response data from API everytime when the component mounts
+   *  Hence, all available products will be displayed everytime we navigate to Products page (i.e. Filters will not be retained)
+   * 
    * API endpoint - GET 'https://geektrust.s3.ap-southeast-1.amazonaws.com/coding-problems/shopping-cart/catalogue.json'
    * Handles any errors by displaying an error message on the screen
    */
@@ -65,21 +67,24 @@ export default function Products() {
 
   /**
    * Function which is called in useEffect Hook
-   * This function sets the required keys to empty arrays on local storage
+   * If there are cartItems in localStorage that means we need to retain cartItems data for the user across pages
+   * This function sets the required keys to empty arrays on local storage only when there are no cartItems in local storage
    * It is done so as to use the corresponding data that we store in those arrays across our pages
    * Also we initialise appliedFilters to the required data structure 
    */
   const setEmptyArraysInLocalStorage = () => {
-    const keysOfLocalStorage = ['cartItems','allProducts','searchedProductsByUser'];
-    keysOfLocalStorage.forEach((key) => {
-      localStorage.setItem( key, JSON.stringify([]));
-    });
-    localStorage.setItem('appliedFilters',JSON.stringify({
-      gender: [],
-      color: [],
-      type: [],
-      price: []
-    }));
+    if(localStorage.getItem('cartItems') === null){
+      const keysOfLocalStorage = ['cartItems','allProducts','searchedProductsByUser'];
+        keysOfLocalStorage.forEach((key) => {
+          localStorage.setItem( key, JSON.stringify([]));
+        });
+        localStorage.setItem('appliedFilters',JSON.stringify({
+          gender: [],
+          color: [],
+          type: [],
+          price: []
+      }));
+    }
   };
 
   /**
