@@ -15,7 +15,7 @@ const Header = () => {
           <StorefrontOutlinedIcon />
           <span>TEEREX STORE</span>
         </div>
-
+        {/* Products and Cart Buttons */}
         <div className="header-components">
           <Link to="/">
             <Button>

@@ -4,7 +4,7 @@ import "../Styles/Thanks.css";
 import { Link } from "react-router-dom";
 
 export default function Thanks() {
-  // We directly navigate an user to Thanks page upon successful checkout and return success message on screen
+  // We directly navigate an user to Thanks page upon successful checkout and show success message on screen
   return (
     <>
       <Header />
