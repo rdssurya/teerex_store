@@ -62,7 +62,7 @@ export default function ProductCard(props) {
     const itemsCurrentlyInCart = [
       ...JSON.parse(localStorage.getItem("cartItems")),
     ];
-    // Checking for whether item in cart or not
+    // Checking for whether item is in cart or not
     const isItemInCart = checkItemIsInCart(props.id, itemsCurrentlyInCart);
 
     if (isItemInCart === true) {
