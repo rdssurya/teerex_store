@@ -21,16 +21,16 @@ export default function ProductCard(props) {
   /**
    * Function to check whether the product is already in cart items
    *
-   * @param {string} nameOfProductUserWantsToAdd - Name of the product which the user wants to add to cart
+   * @param {string} idOfProductUserWantsToAdd - Id of the product which the user wants to add to cart
    * @param {Array.<cartItem>} itemsInCart - Array of objects containing details of items in cart
    * @returns {boolean}
    *      Whether item user wants to add to card is already present in cart or not
    * Returns true if item is already present in cart
    * Returns false if item is not present in cart
    */
-  const checkItemIsInCart = (nameOfProductUserWantsToAdd, itemsInCart) => {
+  const checkItemIsInCart = (idOfProductUserWantsToAdd, itemsInCart) => {
     const product = itemsInCart.find(
-      (cartItem) => cartItem.name === nameOfProductUserWantsToAdd
+      (cartItem) => cartItem.id === idOfProductUserWantsToAdd
     );
     return !!product;
   };
@@ -63,7 +63,7 @@ export default function ProductCard(props) {
       ...JSON.parse(localStorage.getItem("cartItems")),
     ];
     // Checking for whether item in cart or not
-    const isItemInCart = checkItemIsInCart(props.name, itemsCurrentlyInCart);
+    const isItemInCart = checkItemIsInCart(props.id, itemsCurrentlyInCart);
 
     if (isItemInCart === true) {
       showAndHideMessage("Item is already in cart. Click on cart to view cart");
