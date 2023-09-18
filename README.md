@@ -6,13 +6,13 @@ The purpose of this project is to create a modern and feature-rich e-commerce we
 You can check out the live demo of the project : 
 
 # Features
-Product browsing and sorting with filters
-Adding products to the cart
-Adding/Removing cart items from cart
-Secure and easy checkout
+* Product browsing and sorting with filters
+* Adding products to the cart
+* Adding/Removing cart items from cart
+* Secure and easy checkout
 
 # Technologies Used
-React
-React Router (for routing)
-Axios (for API requests)
-Styled Components (for styling)
+* React
+* React Router (for routing)
+* Axios (for API requests)
+* Styled Components (for styling)
