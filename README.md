@@ -3,7 +3,7 @@
 The purpose of this project is to create a modern and feature-rich e-commerce web application using React, allowing businesses to showcase and sell their products while providing customers with a seamless shopping experience.
 
 # Demo
-You can check out the live demo of the project : https://rdssurya-geektrust-frontend-challenge.netlify.app
+You can check out the live demo of the project : https://rdssurya-frontend-challenge.netlify.app
 
 # Features
 * Product browsing and sorting with filters
