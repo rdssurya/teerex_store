@@ -1,4 +1,4 @@
-# Geektrust Frontend Challenge TEEREX STORE
+# TEEREX STORE
 
 The purpose of this project is to create a modern and feature-rich e-commerce web application using React, allowing businesses to showcase and sell their products while providing customers with a seamless shopping experience.
 
